@@ -1,6 +1,6 @@
 --B. Runner and Customer Experience
 
---How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+--1)How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
 SELECT 
   EXTRACT(WEEK FROM registration_date) AS registration_week,
@@ -9,26 +9,50 @@ FROM runners
 GROUP BY registration_week;
 
 
---What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+--2)What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
-with arrival_mins as (
-	select 
-		runner_id ,
-		extract(minute from to_timestamp(pickup_time, 'YYYY-MM-DD HH24:MI:SS')) as arrival_mins,
-		pickup_time
-	from runner_orders_temp ro 
-	where pickup_time <> ' '
+WITH arrival_time as (
+	SELECT
+		ro.runner_id ,
+    	ro.pickup_time ,
+    	co.order_time ,
+    	(ro.pickup_time  - co.order_time) AS time_difference_interval,
+    	ROUND(EXTRACT(EPOCH FROM (ro.pickup_time  - co.order_time)) / 60) AS time_difference_in_minutes
+	FROM  runner_orders_temp ro 
+	INNER JOIN customer_orders_temp co 
+		ON ro.order_id = co.order_id
+	WHERE pickup_time IS NOT NULL
 )
-select 
+SELECT 
 	runner_id,
-	round(avg(arrival_mins))
-from arrival_mins
-group by runner_id;
+	round(avg(time_difference_in_minutes)) as avg_arrival_mins
+FROM arrival_time
+GROUP BY 1
+ORDER BY 1;
 
 
---Is there any relationship between the number of pizzas and how long the order takes to prepare?
+--3)Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
---What was the average distance travelled for each customer?
+WITH prep_time AS (
+	SELECT 	 
+		cot2.order_id,
+		COUNT(pizza_id) AS no_of_pizza,
+		MAX(rot.pickup_time  - cot2.order_time) AS time_difference_interval,
+	    MAX(EXTRACT(EPOCH FROM (rot.pickup_time  - cot2.order_time)) / 60) AS time_difference_in_minutes
+	FROM customer_orders_temp cot2 
+	INNER JOIN runner_orders_temp rot 
+		ON cot2.order_id = rot.order_id 
+	WHERE rot.pickup_time IS NOT NULL
+	GROUP BY 1
+)
+SELECT 
+	no_of_pizza ,
+	ROUND(AVG(time_difference_in_minutes)) as avg_prep_time
+FROM prep_time
+GROUP BY no_of_pizza
+ORDER BY 2 ;
+
+--4)What was the average distance travelled for each customer?
 
 with customer_delivery_dist as (
 	select 
@@ -47,9 +71,18 @@ from customer_delivery_dist
 group by 
 	customer_id ;
 
+--5)What was the difference between the longest and shortest delivery times for all orders?
 
---What was the difference between the longest and shortest delivery times for all orders?
---What was the average speed for each runner for each delivery and do you notice any trend for these values?
---What is the successful delivery percentage for each runner?
+WITH diff_in_delivery AS (
+	SELECT 	 
+		rot.order_id,
+		rot.duration
+	FROM  runner_orders_temp rot 
+)
+SELECT 
+	MAX(duration) - MIN(duration) as diff_delivery_duration
+FROM diff_in_delivery;
 
-
+-- 5)What was the average speed for each runner for each delivery and do you notice any trend for these values?
+-- 6)What is the successful delivery percentage for each runner?
+ 

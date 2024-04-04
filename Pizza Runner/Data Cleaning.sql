@@ -41,50 +41,33 @@ Our course of action to clean the table:
 */
 
 CREATE TABLE runner_orders_temp AS
-SELECT 
-  order_id, 
-  runner_id,  
-  CASE
-	  WHEN pickup_time LIKE 'null' THEN ' '
-	  ELSE pickup_time
-	  END AS pickup_time,
-  CASE
-	  WHEN distance LIKE 'null' THEN ' '
-	  WHEN distance LIKE '%km' THEN TRIM('km' from distance)
-	  ELSE distance 
-    END AS distance,
-  CASE
-	  WHEN duration LIKE 'null' THEN ' '
-	  WHEN duration LIKE '%mins' THEN TRIM('mins' from duration)
-	  WHEN duration LIKE '%minute' THEN TRIM('minute' from duration)
-	  WHEN duration LIKE '%minutes' THEN TRIM('minutes' from duration)
-	  ELSE duration
-	  END AS duration,
-  CASE
-	  WHEN cancellation IS NULL or cancellation LIKE 'null' THEN ' '
-	  ELSE cancellation
-	  END AS cancellation
+SELECT
+  	order_id,
+  	runner_id,
+  	CASE
+    	WHEN pickup_time LIKE 'null' THEN NULL  -- Set to NULL for missing pickup time
+    	ELSE pickup_time
+  	END AS pickup_time,
+	CAST(
+  		CASE WHEN regexp_replace(distance, '[^0-9.]+', '', 'g') = '' THEN '0.0'
+       		ELSE regexp_replace(distance, '[^0-9.]+', '', 'g')
+  		END AS FLOAT) AS distance,
+  	CAST(
+  		CASE WHEN regexp_replace(duration, '[^0-9.]+', '', 'g') = '' THEN '0'
+       		ELSE regexp_replace(duration, '[^0-9.]+', '', 'g')
+  		END AS INTEGER) AS duration,
+  	CASE
+    	WHEN cancellation IS NULL OR cancellation LIKE 'null' THEN NULL  -- Set to NULL for missing cancellation
+    	ELSE cancellation
+  	END AS cancellation
 FROM pizza_runner.runner_orders;
 
 
--- We alter the `pickup_time`, `distance` and `duration` columns to the correct data type.
+-- We alter the `pickup_time` column to the correct data type. 
 
-ALTER TABLE runner_orders_temp
-ALTER COLUMN duration TYPE integer 
-USING  CASE 
-	WHEN duration ~ '^\d+$' then duration::integer else null
-END;
+ALTER TABLE runner_orders_temp  
+ALTER COLUMN pickup_time TYPE timestamp 
+USING CAST(pickup_time AS timestamp); 
 
-ALTER TABLE runner_orders_temp
-ALTER COLUMN pickup_time TYPE TIMESTAMP 
-USING case
-	when pickup_time ~ '^\d+$' THEN pickup_time::TIMESTAMP ELSE NULL
-END;
-
-ALTER TABLE runner_orders_temp
-ALTER COLUMN distance TYPE  FLOAT 
-USING case
-	when distance ~ '^\d+$' THEN distance::FLOAT ELSE NULL
-END;
 
 -- '^\d+$' checks for only digits

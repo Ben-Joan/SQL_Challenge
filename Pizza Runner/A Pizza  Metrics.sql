@@ -61,7 +61,7 @@ WITH pizza_per_order as (
 	INNER JOIN runner_orders ro 
 		on cot.order_id = ro.order_id 
 	WHERE 
-		ro.distance is not null
+		ro.distance IS NOT NULL
 	GROUP BY 
 		cot.order_id
 )
@@ -71,46 +71,35 @@ FROM pizza_per_order;
 
 --For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
-WITH pizza_changes as (
-	SELECT 
-		cot.customer_id,
-		cot.exclusions,
-		cot.extras,
-		(CASE
-			WHEN exclusions = ' ' AND extras = ' ' THEN 1
-			ELSE 0
-		END) as "no_change",
-		(CASE
-			WHEN exclusions <> ' ' or extras <> ' ' THEN 1
-			ELSE 0
-		END) as "at_least_1_change"
-	FROM customer_orders_temp cot 
-	INNER JOIN runner_orders_temp rot
-		on cot.order_id = rot.order_id 
-	WHERE
-		distance is not null  
-)
 SELECT 
-	customer_id, 
-	sum(at_least_1_change) as change_made,
-	sum(no_change) as no_change_made
-FROM pizza_changes
-GROUP BY customer_id
-ORDER BY customer_id;
-
+  c.customer_id,
+  SUM(
+    CASE WHEN c.exclusions <> ' ' OR c.extras <> ' ' THEN 1
+    ELSE 0
+    END) AS at_least_1_change,
+  SUM(
+    CASE WHEN c.exclusions = ' ' AND c.extras = ' ' THEN 1 
+    ELSE 0
+    END) AS no_change
+FROM customer_orders_temp AS c
+JOIN runner_orders_temp AS r
+  ON c.order_id = r.order_id
+WHERE pickup_time IS NOT NULL
+GROUP BY c.customer_id
+ORDER BY c.customer_id;
 
 -- How many pizzas were delivered that had both exclusions and extras?
 
 SELECT 
 	sum(CASE
-		WHEN exclusions is not null AND extras is not null THEN 1
+		WHEN exclusions IS NOT NULL AND extras IS NOT NULL THEN 1
 		ELSE 0
 	END) as "pizza_w_exclu_extra"
 FROM customer_orders_temp cot 
 INNER JOIN runner_orders_temp rot
 	on cot.order_id = rot.order_id 
 WHERE
-	distance is not null 
+	distance IS NOT NULL 
 	AND exclusions <> ' '
 	AND extras <> ' ';
 
@@ -131,7 +120,7 @@ ORDER BY
 WITH weekly_order as (
 	SELECT 
 		to_char(cot.order_time, 'Day') AS day_of_week,
-		extract(dow FROM order_time) AS day_of_week_numeric,
+		extract(DOW FROM order_time) AS day_of_week_numeric,
 		count(order_id) AS pizza_count
 	FROM 
 		customer_orders_temp cot
