@@ -52,23 +52,21 @@ FROM prep_time
 GROUP BY no_of_pizza
 ORDER BY 2 ;
 
---4)What was the average distance travelled for each customer?
+-- 4)What was the average distance travelled for each customer?
 
-with customer_delivery_dist as (
-	select 
+WITH customer_delivery_dist AS (
+	SELECT 
 		cot2.customer_id,
 		rot.distance
-	from customer_orders_temp cot2
-	inner join runner_orders_temp rot 
-		on cot2.order_id = rot.order_id 
-	where
-		distance is not NULL
+	FROM customer_orders_temp cot2
+	INNER JOIN runner_orders_temp rot 
+		ON cot2.order_id = rot.order_id 
 )
-select 
+SELECT 
 	customer_id,
-	AVG(distance) as avg_dist
-from customer_delivery_dist
-group by 
+	ROUND(AVG(distance)) AS avg_dist
+FROM customer_delivery_dist
+GROUP BY 
 	customer_id ;
 
 --5)What was the difference between the longest and shortest delivery times for all orders?
@@ -83,6 +81,37 @@ SELECT
 	MAX(duration) - MIN(duration) as diff_delivery_duration
 FROM diff_in_delivery;
 
--- 5)What was the average speed for each runner for each delivery and do you notice any trend for these values?
--- 6)What is the successful delivery percentage for each runner?
+-- 6)What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+SELECT 
+	runner_id,
+	customer_id ,
+	COUNT(rot.order_id) as pizza_count,
+	AVG((distance * 60)/duration) as "avg_speed(km/hr)"
+FROM runner_orders_temp rot
+INNER JOIN customer_orders_temp cot2 
+	ON rot.order_id = cot2.order_id 
+WHERE pickup_time IS NOT null
+		AND distance <> 0
+GROUP BY 
+	runner_id, customer_id
+ORDER BY 
+	runner_id;
+
+-- 7)What is the successful delivery percentage for each runner?
+
+-- Success Rate (%) = (Number of Successful Attempts / Total Number of Attempts) * 100
+WITH runner_delivery AS (
+	SELECT 
+		runner_id, 
+		COUNT(*) AS total_orders,
+		COUNT(CASE WHEN pickup_time IS NOT NULL THEN 1 END) AS successful_delivery
+	FROM runner_orders_temp rot 
+	GROUP BY runner_id
+)
+SELECT  runner_id, 
+	((successful_delivery * 100)/total_orders) AS success_rate
+FROM runner_delivery
+ORDER BY runner_id
+;
  
