@@ -1,11 +1,11 @@
---Table: customer_orders
+-- customer_orders Table
 
 /*
-Looking at the `customer_orders` table below, we can see that there are
+Looking at the `customer_orders` table, there are:
 - In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
 - In the `extras` column, there are missing/ blank spaces ' ' and null values.
 
-Our course of action to clean the table:
+cleaning the table:
 - Create a temporary table with all the columns
 - Remove null values in `exlusions` and `extras` columns and replace with blank space ' '.
 */
@@ -27,17 +27,13 @@ SELECT
 FROM pizza_runner.customer_orders;
 
 
-/*Table: runner_orders
-
-Looking at the `runner_orders` table below, we can see that there are
-- In the `exclusions` column, there are missing/ blank spaces ' ' and null values. 
-- In the `extras` column, there are missing/ blank spaces ' ' and null values
-
-Our course of action to clean the table:
-- In `pickup_time` column, remove nulls and replace with blank space ' '.
+-- Table: runner_orders
+/*
+cleaning the table:
+- In `pickup_time` column, remove nulls and replace with blank space 0.
 - In `distance` column, remove "km" and nulls and replace with blank space ' '.
-- In `duration` column, remove "minutes", "minute" and nulls and replace with blank space ' '.
-- In `cancellation` column, remove NULL and null and and replace with blank space ' '.
+- In `duration` column, remove "minutes", "minute" and nulls and replace with blank space 0.
+- In `cancellation` column, remove NULL and null and and replace with NULL.
 */
 
 CREATE TABLE runner_orders_temp AS
@@ -63,7 +59,7 @@ SELECT
 FROM pizza_runner.runner_orders;
 
 
--- We alter the `pickup_time` column to the correct data type. 
+-- Alter the `pickup_time` column to the correct data type. 
 
 ALTER TABLE runner_orders_temp  
 ALTER COLUMN pickup_time TYPE timestamp 
