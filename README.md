@@ -9,8 +9,8 @@ For these challenges I loaded the data into PostgreSQL for the analysis, some of
 ## Contents
 
 The solution links for each attempted SQL challenge. Simply click on the link.
-- [Case Study #1: Danny's Diner]()
-- [Case Study #2: Pizza Runner]()
+- [Case Study #1: Danny's Diner](https://github.com/Ben-Joan/sql_challenge/tree/main/Dannys%20Diner)
+- [Case Study #2: Pizza Runner](https://github.com/Ben-Joan/sql_challenge/tree/main/Pizza%20Runner)
 
-- [Famous Paintings Analysis]()
-- [Vehicle Accidents Analysis]()
+- [Famous Paintings Analysis](https://github.com/Ben-Joan/sql_challenge/tree/main/Famous%20Paintings)
+- [Vehicle Accidents Analysis](https://github.com/Ben-Joan/sql_challenge/tree/main/Vehicle%20Accidents)
