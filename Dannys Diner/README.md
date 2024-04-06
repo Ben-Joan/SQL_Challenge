@@ -28,7 +28,8 @@ Each of the following case study questions can be answered using a single SQL st
 
 ## Solutions
 ![SQL Scripts](https://github.com/Ben-Joan/sql_challenge/blob/main/Dannys%20Diner/Queries/Diner%20Analysis.sql)
-10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+	- In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi, how many points do customer A and B have at the end of January?
 ```sql
 WITH january_points AS (
 	SELECT
