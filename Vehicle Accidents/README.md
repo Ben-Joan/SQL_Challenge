@@ -1,6 +1,9 @@
-## Data Source
-![Data](https://github.com/Ben-Joan/sql_challenge/tree/main/Vehicle%20Accidents/Data)
+### Data Source
+[Dataset](https://github.com/Ben-Joan/sql_challenge/tree/main/Vehicle%20Accidents/Data)
 
+### Tool
+ <a href="#"><img alt="PostgreSQL" src ="https://img.shields.io/badge/PostgreSQL-00498D.svg?logo=postgresql&logoColor=white"></a>
+ 
 ## Queries
 - First I created schema (database).
 - Next, I imported the CSV files to this database as tables.
@@ -162,6 +165,3 @@ ORDER BY
 	"LightConditions",
 	"Total Accident" DESC;
 ```
-### Tool
- <a href="#"><img alt="PostgreSQL" src ="https://img.shields.io/badge/PostgreSQL-00498D.svg?logo=postgresql&logoColor=white"></a>
-
