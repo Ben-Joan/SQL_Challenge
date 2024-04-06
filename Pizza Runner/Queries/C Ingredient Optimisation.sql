@@ -48,21 +48,4 @@ ORDER BY
 
 --6.What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
-SELECT 
-	pn.pizza_name  ,
-	pt.topping_name ,
-	COUNT(prt.topping_id) AS topping_qty
-FROM runner_orders_temp rot 
-INNER JOIN customer_orders_temp cot2 
-	ON rot.order_id = cot2.order_id
-INNER JOIN pizza_names pn 
-	ON cot2.pizza_id = pn.pizza_id
-INNER JOIN pizza_recipes_temp prt 
-	ON cot2.pizza_id = prt.pizza_id  
-INNER JOIN pizza_toppings pt 
-	ON prt.topping_id = pt.topping_id 
-WHERE
-	pickup_time is not null
-group BY pn.pizza_name, pt.topping_name 
-ORDER BY pn.pizza_name ;
 
