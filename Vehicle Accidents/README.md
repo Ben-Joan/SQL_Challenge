@@ -1,5 +1,5 @@
 ## Entity Relationship Diagram
-![Vehicle Accidents](https://github.com/Ben-Joan/sql_challenge/blob/main/Famous%20Paintings/Paintings%20ERD.png)
+![Vehicle Accidents](https://github.com/Ben-Joan/sql_challenge/blob/main/Vehicle%20Accidents/VehicleAccidents%20ERD.png)
 
 ### Data Source
 [Dataset](https://github.com/Ben-Joan/sql_challenge/tree/main/Vehicle%20Accidents/Data)
