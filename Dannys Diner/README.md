@@ -27,4 +27,35 @@ Each of the following case study questions can be answered using a single SQL st
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
 ## Solutions
+10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+```sql
+WITH january_points AS (
+	SELECT
+		mem.customer_id ,
+		mem.join_date ,
+		mem.join_date + 6 AS valid_point_date,
+		s.order_date ,
+		m.product_name ,
+		m.price ,
+		CASE 
+			WHEN order_date BETWEEN join_date AND (mem.join_date + 6) THEN (m.price * 20)
+			WHEN product_name = 'sushi' AND order_date > (mem.join_date + 6) THEN (m.price * 20)
+			ELSE (m.price * 10)
+		END AS points
+	FROM members mem 
+	INNER JOIN sales s 
+		ON mem.customer_id = s.customer_id 
+	INNER JOIN menu m 
+		ON s.product_id = m.product_id 
+	WHERE 
+		join_date <= s.order_date
+)
+SELECT 
+	customer_id,
+	sum(points) AS total_points
+FROM january_points
+WHERE extract(month FROM order_date) = 1
+GROUP BY customer_id;
+```
 ![SQL Scripts](https://github.com/Ben-Joan/sql_challenge/blob/main/Dannys%20Diner/Queries/Diner%20Analysis.sql)
